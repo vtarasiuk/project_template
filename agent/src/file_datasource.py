@@ -1,6 +1,9 @@
 from csv import reader
 from datetime import datetime
+from domain.accelerometer import Accelerometer
+from domain.gps import Gps
 from domain.aggregated_data import AggregatedData
+import config
 
 
 class FileDatasource:
@@ -13,6 +16,12 @@ class FileDatasource:
 
     def read(self) -> AggregatedData:
         """Метод повертає дані отримані з датчиків"""
+        return AggregatedData(
+            Accelerometer(1, 2, 3),
+            Gps(4, 5),
+            datetime.now(),
+            config.USER_ID,
+        )
 
     def startReading(self, *args, **kwargs):
         """Метод повинен викликатись перед початком читання даних"""
