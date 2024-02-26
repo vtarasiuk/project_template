@@ -1,3 +1,4 @@
+import asyncio
 from kivy.app import App
 from kivy_garden.mapview import MapMarker, MapView
 from kivy.clock import Clock
@@ -53,4 +54,6 @@ class MapViewApp(App):
 
 
 if __name__ == "__main__":
-    MapViewApp().run()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(MapViewApp().async_run(async_lib="asyncio"))
+    loop.close()
