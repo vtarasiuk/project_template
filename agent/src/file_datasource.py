@@ -1,4 +1,3 @@
-from csv import reader
 from datetime import datetime
 from domain.accelerometer import Accelerometer
 from domain.gps import Gps
@@ -14,22 +13,25 @@ class FileDatasource:
         gps_filename: str,
         parking_filename: str
     ) -> None:
-        
+        self.data_is_reading = False
+        self.acc_line_number = 0
+        self.gps_line_number = 0
+        self.park_line_number = 0
         self.accelerometer_file = accelerometer_filename
         self.gps_file = gps_filename
         self.parking_file = parking_filename
 
-        with open(self.accelerometer_file) as file:
+        with open(self.accelerometer_file, 'r') as file:
             entries = [line.rstrip() for line in file]
             entries = entries[1:]
             self.accelerometer_data = entries
 
-        with open(self.gps_file) as file:
+        with open(self.gps_file, 'r') as file:
             entries = [line.rstrip() for line in file]
             entries = entries[1:]
             self.gps_data = entries
 
-        with open(self.parking_file) as file:
+        with open(self.parking_file, 'r') as file:
             entries = [line.rstrip() for line in file]
             entries = entries[1:] 
             self.parking_data = entries
