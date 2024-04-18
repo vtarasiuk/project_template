@@ -4,6 +4,7 @@ from domain.gps import Gps
 from domain.parking import Parking
 from domain.aggregated_data import AggregatedData
 import config
+from typing import List
 
 
 class FileDatasource:
@@ -21,20 +22,14 @@ class FileDatasource:
         self.gps_file = gps_filename
         self.parking_file = parking_filename
 
-        with open(self.accelerometer_file, 'r') as file:
-            entries = [line.rstrip() for line in file]
-            entries = entries[1:]
-            self.accelerometer_data = entries
+        self.accelerometer_data = self._read_file(self.accelerometer_file)
+        self.gps_data = self._read_file(self.gps_file)
+        self.parking_data = self._read_file(self.parking_file)
 
-        with open(self.gps_file, 'r') as file:
+    def _read_file(self, filename: str) -> List[str]:
+        with open(filename, 'r') as file:
             entries = [line.rstrip() for line in file]
-            entries = entries[1:]
-            self.gps_data = entries
-
-        with open(self.parking_file, 'r') as file:
-            entries = [line.rstrip() for line in file]
-            entries = entries[1:] 
-            self.parking_data = entries
+            return entries[1:] if len(entries) > 1 else []
 
     def read(self) -> AggregatedData:
         data = AggregatedData(
@@ -46,14 +41,9 @@ class FileDatasource:
         )
 
         if self.data_is_reading:
-            if self.acc_line_number > len(self.accelerometer_data) - 1:
-                self.acc_line_number = 0
-                
-            if self.gps_line_number > len(self.gps_data) - 1:
-                self.gps_line_number = 0
-            
-            if self.park_line_number > len(self.parking_data) - 1:
-                self.park_line_number = 0
+            self.acc_line_number %= len(self.accelerometer_data)
+            self.gps_line_number %= len(self.gps_data)
+            self.park_line_number %= len(self.parking_data)
 
             acceleration = self.accelerometer_data[self.acc_line_number].split(',')
             x, y, z = acceleration
