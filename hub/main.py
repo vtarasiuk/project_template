@@ -46,7 +46,7 @@ async def save_processed_agent_data(processed_agent_data: ProcessedAgentData):
                 redis_client.lpop("processed_agent_data")
             )
             processed_agent_data_batch.append(processed_agent_data)
-        print(processed_agent_data_batch)
+        print("Batch:", processed_agent_data_batch)
         store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch)
     return {"status": "ok"}
 
@@ -57,10 +57,10 @@ client = mqtt.Client()
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        logging.info("Connected to MQTT broker")
+        print("Connected to MQTT broker")
         client.subscribe(MQTT_TOPIC)
     else:
-        logging.info(f"Failed to connect to MQTT broker with code: {rc}")
+        print(f"Failed to connect to MQTT broker with code: {rc}")
 
 
 def on_message(client, userdata, msg):
@@ -84,7 +84,7 @@ def on_message(client, userdata, msg):
         store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch)
         return {"status": "ok"}
     except Exception as e:
-        logging.info(f"Error processing MQTT message: {e}")
+        print(f"Error processing MQTT message: {e}")
 
 
 # Connect
